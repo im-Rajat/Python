@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GET vs POST Test (Python Backend)</title>
+    <style>
+        body { font-family: sans-serif; display: grid; gap: 20px; }
+        div { border: 1px solid #ccc; padding: 10px; }
+        pre { background: #eee; padding: 10px; }
+    </style>
+</head>
+<body>
+
+    <div>
+        <h2>Submit a New Guest (POST)</h2>
+        <form id="guest-form">
+            <label for="name">Name:</label>
+            <input type="text" id="name-input" required>
+            <button type="submit">Submit (POST to /api/guests)</button>
+        </form>
+    </div>
+
+    <div>
+        <h2>Current Guest List (GET)</h2>
+        <button id="load-button">Load Guests (GET from /api/guests)</button>
+        <pre id="guest-list">Click the button to load guests...</pre>
+    </div>
+
+    <script>
+        const guestListEl = document.getElementById('guest-list');
+        const loadButton = document.getElementById('load-button');
+        const guestForm = document.getElementById('guest-form');
+        const nameInput = document.getElementById('name-input');
+
+        // --- Handle the GET Request ---
+        loadButton.addEventListener('click', async () => {
+            guestListEl.textContent = "Loading...";
+            
+            const response = await fetch('/api/guests'); // No change here
+            const guests = await response.json();
+            
+            guestListEl.textContent = JSON.stringify(guests, null, 2);
+        });
+
+        // --- Handle the POST Request ---
+        guestForm.addEventListener('submit', async (event) => {
+            event.preventDefault(); 
+            
+            const newName = nameInput.value;
+            
+            const response = await fetch('/api/guests', { // No change here
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ name: newName }) 
+            });
+
+            const updatedGuests = await response.json();
+
+            guestListEl.textContent = JSON.stringify(updatedGuests, null, 2);
+            nameInput.value = '';
+        });
+
+    </script>
+</body>
+</html>
